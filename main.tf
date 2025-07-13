@@ -6,12 +6,12 @@ resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
 }
 
+
 resource "aws_subnet" "subnet1" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.1.0/24"
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.1.0/24"
   availability_zone = "us-east-1a"
 }
-
 
 resource "aws_subnet" "subnet2" {
   vpc_id            = aws_vpc.main.id
@@ -21,22 +21,24 @@ resource "aws_subnet" "subnet2" {
 
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
+  tags = {
+    Name = "medusa-igw"
+  }
 }
 
-
-resource "aws_security_group" "alb_sg" {
-  name        = "alb-sg"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    from_port   = 80resource "aws_route_table" "public" {
+resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
 
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
   }
+
+  tags = {
+    Name = "medusa-public-rt"
+  }
 }
+
 resource "aws_route_table_association" "subnet1_assoc" {
   subnet_id      = aws_subnet.subnet1.id
   route_table_id = aws_route_table.public.id
@@ -48,19 +50,7 @@ resource "aws_route_table_association" "subnet2_assoc" {
 }
 
 
-
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
+   
 
 resource "aws_lb" "medusa_alb" {
   name               = "medusa-alb"
