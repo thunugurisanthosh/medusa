@@ -1,6 +1,9 @@
 provider "aws" {
-  region = var.region
+  region = "us-east-1"
+  access_key = "AKIAXYYSFEVVQUHIOAOU"
+  secret_key = "B0uZlMLhpQCUqRvKcFSIHP+xctjWjZYfCivrHHp6I"
 }
+
 
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
