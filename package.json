@@ -1,0 +1,16 @@
+{
+  "name": "medusa-backend",
+  "version": "1.0.0",
+  "description": "Medusa backend running on ECS with Fargate",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "medusa develop",
+    "build": "echo 'No build step for now'"
+  },
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@medusajs/medusa": "^1.17.0"
+  }
+}
+
