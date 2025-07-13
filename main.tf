@@ -12,6 +12,13 @@ resource "aws_subnet" "subnet1" {
   availability_zone = "us-east-1a"
 }
 
+resource "aws_subnet" "subnet2" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.2.0/24"
+  availability_zone = "us-east-1b"
+}
+
+
 resource "aws_security_group" "alb_sg" {
   name        = "alb-sg"
   vpc_id      = aws_vpc.main.id
@@ -36,8 +43,9 @@ resource "aws_lb" "medusa_alb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
-  subnets            = [aws_subnet.subnet1.id]
+  subnets            = [aws_subnet.subnet1.id, aws_subnet.subnet2.id]
 }
+
 
 resource "aws_lb_target_group" "medusa_tg" {
   name     = "medusa-tg"
@@ -115,11 +123,11 @@ resource "aws_ecs_service" "medusa" {
   desired_count   = var.desired_count
   launch_type     = "FARGATE"
 
-  network_configuration {
-    subnets          = [aws_subnet.subnet1.id]
-    security_groups  = [aws_security_group.alb_sg.id]
-    assign_public_ip = true
-  }
+ network_configuration {
+  subnets          = [aws_subnet.subnet1.id, aws_subnet.subnet2.id]
+  security_groups  = [aws_security_group.alb_sg.id]
+  assign_public_ip = true
+}
 
   load_balancer {
     target_group_arn = aws_lb_target_group.medusa_tg.arn
